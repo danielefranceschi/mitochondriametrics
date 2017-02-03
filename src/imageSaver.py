@@ -14,4 +14,4 @@ class ImageSaver:
 
     def saveImage(img,aFileName):
         # TODO destpath
-		cv2.SaveImage(appendSuffixToFilename(aFileName, fnSuffix), img)
+        cv2.SaveImage(appendSuffixToFilename(aFileName, fnSuffix), img)
