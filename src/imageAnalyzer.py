@@ -6,28 +6,31 @@ import cv2
 
 class ImageAnalyzer:
 
-    def __init__(self, minimumFeatureSize=100):
+    def __init__(self, minimumFeatureSize=1024):
         self.minimumSize=minimumFeatureSize
 
-    def measureImage(imgFileName):
+    def measureImage(self,imgFileName):
 
         # load the image, convert it to grayscale, and blur it slightly
         image = cv2.imread(imgFileName)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (7, 7), 0)
+        gray = cv2.GaussianBlur(gray, (11, 11), 0)
 
-        # perform edge detection, then perform a dilation + erosion to
-        # close gaps in between object edges
-        edged = cv2.Canny(gray, 50, 100)
-        edged = cv2.dilate(edged, None, iterations=1)
-        edged = cv2.erode(edged, None, iterations=1)
+        # dump out background
+        ret,th4 = cv2.threshold(gray,64,255,cv2.THRESH_TOZERO)
+        
+        # perform a dilation + erosion to close gaps in between object edges
+        dilated = cv2.dilate(th4, None, iterations=3)
+        eroded = cv2.erode(dilated, None, iterations=5)
 
+        # finally remove noise
+        final = cv2.medianBlur(eroded, 31)
+        
         # find contours in the edge map
-        cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+        cnts = cv2.findContours(final.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # sort the contours from left-to-right
-        (cnts, _) = contours.sort_contours(cnts)
+        (cnts, _) = contours.sort_contours(cnts[1])
 
         # initialize result list
         result=[]

@@ -8,10 +8,8 @@ class ImageSaver:
         self.fnSuffix=filenameSuffix
         self.destPath=destinationPath
 
-    def appendSuffixToFilename(aFileName, aSuffix):
-        parts = aFileName.split('.')
-        return "".join(parts[:-1])+ '_' + aSuffix + '.' + parts[-1]
-
-    def saveImage(img,aFileName):
+    def saveImage(self,img,aFileName):
         # TODO destpath
-        cv2.SaveImage(appendSuffixToFilename(aFileName, fnSuffix), img)
+        parts = aFileName.split('.')
+        newFileName= "".join(parts[:-1])+ '_' + self.fnSuffix + '.' + parts[-1]
+        cv2.imwrite(newFileName, img)
